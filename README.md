@@ -38,7 +38,7 @@ Straight forward mySQL database to keep temperature data.
 
 Thanks for checking out my weekend project :) hope you enjoy it.
 
-
+```
 When beer is brewed all is well,
 When beer is drunk life is good.
-
+```
