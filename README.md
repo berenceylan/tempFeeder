@@ -15,7 +15,7 @@ I will update node.js parts to get rid of polling method.
 
 ### 2- Raspberry PI 
 
-I have a cron working on raspberry. It works once a minute and sends temperature data to my mySQL database.
+I have a cron working on raspberry. It works once a minute and sends temperature data to my mySQL database.It uses ds18b20 sensor to measure temperature.
 
 #### To-Do
 
@@ -35,6 +35,10 @@ Straight forward mySQL database to keep temperature data.
 * All past brewings can be monitored on a new page. It can be selected via dropdown menu. Bucket and bottle phases can be seen separately.
 * All the expenses can be recorded to the database to calculate price per bottle.
 * A mini resource planning system will be added to the ui to keep track of the supplies.
+
+## Further Work
+In the future I am planning to drive a thermostat using raspberry pi to use it with a refrigirator.
+
 
 Thanks for checking out my weekend project :) hope you enjoy it.
 
