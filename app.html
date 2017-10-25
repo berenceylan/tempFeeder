@@ -1,0 +1,328 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Ceylan Brewery</title>
+    <style>
+    body{
+        text-align: center;
+        width: 97%;
+        height: 100%;
+    }
+        #topsection{
+
+        }
+
+        #hchart {
+            width: 100%;
+            height: 300px;
+            border: 0px solid #bbb;
+            float: left;
+        }
+
+        #hchart2 {
+            width: 60%;
+            height: 500px;
+            border: 0px solid #bbb;
+            float: left;
+        }
+       
+        #tempGauge{
+            height: 500px;
+            width: 30%;
+            border: 0px solid #bbb;
+            float: right;
+        }
+        .invis{
+            display: none;
+        }
+        
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+    <script>
+        var socket = io('webserver-ip');
+        var hchart = null;
+        var hchart2 = null;
+        var tempData = 0;
+        var tempChart = null;
+        socket.on('completeData', function (data) {
+            document.getElementById('complete-data').innerHTML = JSON.stringify(data);
+
+            var series = {};
+            var series2 = {};
+            series.name = 'Date';
+            series2.name = series.name;
+            series.data = [];
+            series2.data = [];
+
+            Object.keys(data).sort().forEach(function (key) {
+                if (data.hasOwnProperty(key)) {
+                    var point = {};
+                    point.x = parseInt(key);
+                    point.y = parseFloat(parseFloat(data[key].degree).toFixed(1));
+                    series.data.push(point);
+                    series2.data.push(point);
+                }
+            });
+
+            tempData = series.data[series.data.length-1].y;
+            series2.data = series.data.slice(-60);
+
+             Highcharts.setOptions({                                            // This is for all plots, change Date axis to local timezone
+                global : {
+                    useUTC : true
+                }
+            });
+
+            $('#hchart').highcharts({
+                chart: {
+                    type: 'spline',
+                    animation: Highcharts.svg, // don't animate in old IE
+                    marginRight: 10,
+                    events: {
+                        load: function () {
+                            hchart = this;
+                        }
+                    }
+                },
+                plotOptions:{
+                    series:{
+                        turboThreshold: 5000
+                    }
+                },
+                colors: ['#7cb5ec', '#ff8528', '#90ed7d', '#f7a35c', '#8085e9',
+                    '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1'],
+                title: {
+                    text: 'Last 4 days'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    tickPixelInterval: 250
+                },
+                yAxis: {                    
+                    title: {
+                        text: 'Temperature °C'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 1) + " °C";
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                series: [series],
+                credits: {
+                    enabled: false
+                }
+            });
+
+            var chart2 = $('#hchart2').highcharts({
+                chart: {
+                    type: 'spline',
+                    animation: Highcharts.svg, // don't animate in old IE
+                    marginRight: 10,
+                    events: {
+                        load: function () {
+                            hchart2 = this;
+                        }
+                    }
+                },
+                plotOptions:{
+                    series:{
+                        turboThreshold: 60
+                    }
+                },
+                colors: ['#7cb5ec', '#ff8528', '#90ed7d', '#f7a35c', '#8085e9',
+                    '#f15c80', '#e4d354', '#8085e8', '#8d4653', '#91e8e1'],
+                title: {
+                    text: 'Last 60 minutes'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    tickPixelInterval: 150
+                },
+                yAxis: {
+                    title: {
+                        text: 'Temperature °C'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                            Highcharts.numberFormat(this.y, 1) + " °C";
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                series: [series2],
+                credits: {
+                    enabled: false
+                }
+            });
+
+            tempChart = $('#tempGauge').highcharts({
+
+                chart: {
+                    type: 'gauge',
+                    plotBackgroundColor: null,
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+
+                title: {
+                    text: 'Current Temperature'
+                },
+
+                pane: {
+                    startAngle: -150,
+                    endAngle: 150,
+                    background: [{
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+                                [0, '#FFF'],
+                                [1, '#333']
+                            ]
+                        },
+                        borderWidth: 0,
+                        outerRadius: '109%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+                                [0, '#333'],
+                                [1, '#FFF']
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        // default background
+                    }, {
+                        backgroundColor: '#DDD',
+                        borderWidth: 0,
+                        outerRadius: '105%',
+                        innerRadius: '103%'
+                    }]
+                },
+
+                // the value axis
+                yAxis: {
+                    min: 0,
+                    max: 50,
+
+                    minorTickInterval: 'auto',
+                    minorTickWidth: 1,
+                    minorTickLength: 7,
+                    minorTickPosition: 'inside',
+                    minorTickColor: '#666',
+
+                    tickPixelInterval: 50,
+                    tickWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 10,
+                    tickColor: '#666',
+                    labels: {
+                        step: 2,
+                        rotation: 'auto'
+                    },
+                    title: {
+                        text: '°C'
+                    },
+                    plotBands: [{
+                        from: 18,
+                        to: 25,
+                        color: '#55BF3B' // green
+                    }, {
+                        from: 0,
+                        to: 18,
+                        color: '#DDDF0D' // yellow
+                    }, {
+                        from: 25,
+                        to: 50,
+                        color: '#DF5353' // red
+                    }]
+                },
+
+                series: [{
+                    name: 'Temperature',
+                    data: [tempData],
+                    tooltip: {
+                        valueSuffix: ' °C '
+                    }
+                }],
+                credits: {
+                    enabled: false
+                }
+            });
+        });
+        socket.on('dataUpdate', function (data) {
+            document.getElementById('updated-data').innerHTML += JSON.stringify(data) + "\n";
+
+            var series = hchart.series[0].data;
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+                    var bOld = false;
+                    for (var i = 0; i < series.length; i++) {
+                        if (series[i].x === key) {
+                            bOld = true;
+                            series[i].update(parseFloat(parseFloat(data[key].degree).toFixed(1)));
+                            break;
+                        }
+                    }
+                    if (!bOld) {
+                        console.log('new point');
+                        hchart.series[0].addPoint([parseInt(key), parseFloat(parseFloat(data[key].degree).toFixed(1))], true, true);
+                        hchart2.series[0].addPoint([parseInt(key), parseFloat(parseFloat(data[key].degree).toFixed(1))], true, true);
+
+                        var point = tempChart.highcharts().series[0].points[0];
+                        point.update(parseFloat(parseFloat(data[key].degree).toFixed(1)));
+
+
+                    }
+                }
+            }
+        });
+    </script>
+  </head>
+  <body>
+    <h1>Ceylan Brewery Real-time Temperature Monitor</h1>
+    <div id='hchart'></div>
+    <div id='tempGauge'></div>
+    <div id='hchart2'></div>
+    
+    <div style="clear:both"></div>
+
+    <h2 class="invis">Initial Data</h2>
+    <pre id='complete-data' class="invis"></pre><br/>
+    <h2 class="invis">Data Updates</h2>
+    <pre id='updated-data' class="invis"></pre>
+  </body>
+</html>
