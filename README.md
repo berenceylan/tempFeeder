@@ -1,6 +1,8 @@
 # tempFeeder
 Web UI of real-time temperature tracking project with a raspberry pi. I am simply using it so that i keep track of my beer brewing bucket's temperature in real-time from anywhere. Brewing a wheat beer can be tricky sometimes :) Fingers crossed for a weihenstephaner clone :)
 
+[Live demo](http://95.85.28.239:3001)
+
 ## Contains 3 parts;
 
 ### 1- Node.Js
@@ -28,4 +30,15 @@ Also it will be sending the temperature data to multiple databases in the future
 Straight forward mySQL database to keep temperature data.
 
 
+## Web UI To-Do
+* New brewings can be added via interface. (Starting date, bottling date, prime sugar amount, yeast type, water density et cetera.)
+* All past brewings can be monitored on a new page. It can be selected via dropdown menu. Bucket and bottle phases can be seen separately.
+* All the expenses can be recorded to the database to calculate price per bottle.
+* A mini resource planning system will be added to the ui to keep track of the supplies.
+
+Thanks for checking out my weekend project :) hope you enjoy it.
+
+
+When beer is brewed all is well,
+When beer is drunk life is good.
 
