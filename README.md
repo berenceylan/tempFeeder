@@ -3,6 +3,8 @@ Web UI of real-time temperature tracking project with a raspberry pi. I am simpl
 
 [Live demo](http://95.85.28.239:3001)
 
+P.S: Raspberry pi code is on the way
+
 ## Contains 3 parts;
 
 ### 1- Node.Js
